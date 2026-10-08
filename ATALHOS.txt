@@ -1,0 +1,42 @@
+ATALHOS DO SISTEMA
+==================
+
+Enter   Próximo campo / confirmar ação / ativar botão focado
+F1      Ajuda dos atalhos
+F2      Frente de Caixa / procurar produtos
+F3      Abrir Caixa Diário
+F4      Avançar etapa da venda / finalizar
+F5      Cancelar e apagar a venda atual
+Ctrl+I  Abrir Assistente Local
+Esc     Fechar aba atual / cancelar confirmação
+Alt+←   Voltar para aba anterior
+F11     Tela cheia
+Ctrl+M  Alternar janela/maximizado
+
+LOGIN
+Login + Enter   → vai para Senha
+Senha + Enter   → vai para botão Entrar
+Entrar + Enter  → acessa o sistema
+
+CADASTROS
+Enter   Vai para o próximo campo
+Último campo + Enter   Vai para Salvar
+Salvar + Enter         Confirma o cadastro
+Campo de busca + Enter Executa a busca
+
+FRENTE DE CAIXA
+Ao digitar           Filtra na hora e marca o primeiro resultado
+↑ / ↓ na busca       Move a marcação pelos produtos sem sair da busca
+Busca + Enter        Abre o produto atualmente marcado
+Preço + Enter        Vai para Quantidade
+Quantidade + Enter   Adiciona o produto ao carrinho
+Enter                Confirma etapas e campos de pagamento
+F4                   Avança/finaliza
+F5                   Cancela a venda
+
+CAIXA DIÁRIO
+Enter   Percorre campos e confirma abertura/movimentação/fechamento
+
+CONFIRMAÇÕES
+Enter   Confirmar
+Esc     Cancelar

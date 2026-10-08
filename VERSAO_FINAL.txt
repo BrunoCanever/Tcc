@@ -1,0 +1,98 @@
+VERSÃO FINAL — SISTEMA DE GERENCIAMENTO DE MATERIAIS
+
+Principais recursos:
+- Administrador padrão: login q / senha q.
+- Interface em uma única janela com abas.
+- Esc fecha a aba atual; a aba Início permanece protegida.
+- F1: ajuda.
+- F2: Frente de Caixa.
+- F3: Caixa Diário.
+- F4: avançar/finalizar venda.
+- F5: cancelar venda.
+- Ctrl+I: Assistente Local.
+- Alt+seta esquerda: voltar.
+
+FRENTE DE CAIXA
+- Fluxo em 3 etapas: Produtos -> Cliente/Dados -> Pagamento.
+- Lista completa de produtos.
+- Pesquisa por nome, código ou categoria.
+- Ordenação por nome, preço, estoque ou categoria.
+- Seleção corrigida por clique, duplo clique, botão ou Enter.
+- Código único para cada produto.
+- Confirmação do preço de cada item antes de adicioná-lo à venda.
+- Preço do item pode ser aumentado ou reduzido.
+- Histórico guarda preço de tabela e preço efetivamente vendido.
+- Pagamento possui desconto geral e acréscimo geral em R$ ou porcentagem.
+- Formas: dinheiro, PIX, cartão de crédito, cartão de débito e crediário.
+
+CAIXA DIÁRIO
+- Abertura com fundo de troco.
+- Sangria.
+- Acréscimo de dinheiro no caixa.
+- Resumo das vendas do dia.
+- Saldo esperado.
+- Fechamento com valor contado e diferença.
+- Toda nova venda fica vinculada ao Caixa Diário aberto.
+
+CATÁLOGO E UNIDADES
+- 450 produtos de demonstração: 50 em cada uma das 9 categorias.
+- Produtos demo antigos incorretos são removidos.
+- Produtos antigos já usados em vendas ficam inativos como legado para preservar histórico.
+- Produtos cadastrados manualmente não são apagados pela limpeza dos dados demo.
+- Unidades padronizadas:
+  UN = unidade
+  PC = peça
+  CX = caixa
+  SC = saco
+  KG = quilograma
+  G = grama
+  L = litro
+  ML = mililitro
+  M = metro linear
+  M2 = metro quadrado
+  MC3 = metro cúbico
+  RL = rolo
+- Areia, brita, pedrisco e bica corrida usam MC3.
+- Pisos, porcelanatos e revestimentos usam M2.
+- Compensado, MDF e OSB usam M2.
+- Tubos, mangueiras, fios, cabos e madeiras lineares usam M.
+- Tintas líquidas usam L.
+- Massa corrida e massa acrílica usam KG.
+- Cimentos e argamassas ensacados usam SC.
+
+IA
+- Assistente integrado para consulta de produto, estoque e localização.
+- IA não altera estoque nem finaliza vendas.
+- Existe modo local caso a API não esteja configurada.
+
+INSTALAÇÃO
+- INSTALAR_TUDO.bat prepara dependências, banco, migrações, catálogo e IA.
+- INICIAR_SISTEMA.bat abre o sistema.
+
+- Seleção do produto corrigida usando diretamente a linha clicada.
+- Ao selecionar um produto, abre uma telinha compacta sobre a lista.
+- A telinha mostra somente Preço e Quantidade, além de Cancelar/Adicionar.
+- Após confirmar, a telinha fecha e o item entra no carrinho.
+
+- Navegação completa por Enter em login, cadastros, buscas e confirmações.
+- Login: Enter passa de Login -> Senha -> Entrar -> sistema.
+- Enter ativa qualquer botão focado.
+- Confirmações internas: Enter confirma e Esc cancela.
+
+- Pesquisa do Caixa filtra imediatamente a cada caractere digitado.
+- O primeiro resultado fica marcado automaticamente.
+- Setas ↑/↓ navegam pelos resultados mantendo o foco na pesquisa.
+- Enter abre o produto atualmente marcado.
+
+- Caixa Diário dividido em Resumo e Vendas/Movimentações.
+- Aba diária lista vendas, sangrias e acréscimos por horário.
+- Botões pequenos Sangria e Acréscimo na aba de movimentações.
+- Sangria/Acréscimo usam telinha compacta com Valor e Motivo.
+- Após registrar, a lista diária atualiza e permanece na mesma aba.
+
+- Assistente Local executa consultas fora da thread gráfica e não congela a janela.
+- Apenas uma chamada online por consulta, com resposta final baseada nos dados reais do MySQL.
+- Falha online ativa busca local imediata e cooldown temporário para evitar novas esperas.
+- Indicador visual `Consultando...` durante a consulta.
+
+- Instalador: chave da IA mostra asteriscos ao digitar/colar, sem revelar o valor real.
