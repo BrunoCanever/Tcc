@@ -1,4 +1,6 @@
 import tkinter as tk
+import calendar
+from datetime import date, datetime, timedelta
 from tkinter import ttk, messagebox
 
 CORES = {
@@ -416,3 +418,283 @@ def solicitar_texto_enter(
     resposta = None if cancelado.get() else valor.get()
     caixa.destroy()
     return resposta
+
+
+MESES_PT = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+]
+
+DIAS_SEMANA_PT = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+
+
+def _data_iso_segura(valor, padrao=None):
+    """Converte YYYY-MM-DD/date/datetime em date, sem deslocamento de fuso."""
+    if isinstance(valor, datetime):
+        return valor.date()
+    if isinstance(valor, date):
+        return valor
+    if valor:
+        try:
+            return datetime.strptime(str(valor).strip(), "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            pass
+    return padrao or date.today()
+
+
+def solicitar_data(parent, titulo="Selecionar data", valor_inicial=None):
+    """
+    Seletor de data dentro da própria janela do sistema.
+
+    Não cria Toplevel. Possui atalhos para Hoje, Amanhã, +7, +15 e +30 dias,
+    navegação por mês e seleção pelo calendário. Retorna YYYY-MM-DD ou None.
+    """
+    root = parent.winfo_toplevel()
+    concluido = tk.BooleanVar(master=parent, value=False)
+    cancelado = tk.BooleanVar(master=parent, value=False)
+
+    inicial = _data_iso_segura(valor_inicial, date.today())
+    selecionada = {"data": inicial}
+    mes_atual = {"ano": inicial.year, "mes": inicial.month}
+
+    painel = ttk.Frame(
+        root,
+        style="Painel.TFrame",
+        padding=18,
+        relief="solid",
+        borderwidth=1,
+    )
+    painel.place(relx=0.5, rely=0.5, anchor="center", width=620, height=535)
+    painel.lift()
+
+    ttk.Label(
+        painel,
+        text=titulo,
+        style="Cabecalho.TLabel",
+    ).pack(anchor="w")
+
+    ttk.Label(
+        painel,
+        text="Escolha uma opção rápida ou selecione um dia no calendário.",
+        style="Painel.TLabel",
+    ).pack(anchor="w", pady=(4, 12))
+
+    atalhos = ttk.Frame(painel, style="Painel.TFrame")
+    atalhos.pack(fill="x", pady=(0, 10))
+
+    calendario_area = ttk.Frame(painel, style="Painel.TFrame")
+    calendario_area.pack(fill="both", expand=True)
+
+    cabecalho = ttk.Frame(calendario_area, style="Painel.TFrame")
+    cabecalho.pack(fill="x", pady=(2, 8))
+
+    grade = ttk.Frame(calendario_area, style="Painel.TFrame")
+    grade.pack(fill="both", expand=True)
+
+    rodape = ttk.Frame(painel, style="Painel.TFrame")
+    rodape.pack(fill="x", pady=(10, 0))
+
+    texto_selecionada = tk.StringVar(master=parent)
+
+    def texto_data(d):
+        return f"{d.strftime('%d/%m/%Y')} ({d.isoformat()})"
+
+    def atualizar_texto():
+        texto_selecionada.set(f"Data selecionada: {texto_data(selecionada['data'])}")
+
+    def confirmar(_evento=None):
+        cancelado.set(False)
+        concluido.set(True)
+        return "break"
+
+    def cancelar(_evento=None):
+        cancelado.set(True)
+        concluido.set(True)
+        return "break"
+
+    def escolher(d, confirmar_agora=False):
+        selecionada["data"] = d
+        mes_atual["ano"] = d.year
+        mes_atual["mes"] = d.month
+        atualizar_texto()
+        desenhar_calendario()
+        if confirmar_agora:
+            confirmar()
+
+    def escolher_offset(dias):
+        escolher(date.today() + timedelta(days=dias))
+
+    opcoes = [
+        ("Hoje", 0),
+        ("Amanhã", 1),
+        ("+7 dias", 7),
+        ("+15 dias", 15),
+        ("+30 dias", 30),
+    ]
+    for texto, dias in opcoes:
+        ttk.Button(
+            atalhos,
+            text=texto,
+            style="Secundario.TButton",
+            command=lambda d=dias: escolher_offset(d),
+        ).pack(side="left", padx=(0, 5))
+
+    lbl_mes = ttk.Label(
+        cabecalho,
+        text="",
+        style="Painel.TLabel",
+        font=("Segoe UI Semibold", 12),
+        anchor="center",
+    )
+    lbl_mes.pack(side="left", fill="x", expand=True)
+
+    def mover_mes(delta):
+        ano = mes_atual["ano"]
+        mes = mes_atual["mes"] + delta
+        if mes < 1:
+            mes = 12
+            ano -= 1
+        elif mes > 12:
+            mes = 1
+            ano += 1
+        mes_atual["ano"] = ano
+        mes_atual["mes"] = mes
+        desenhar_calendario()
+
+    ttk.Button(
+        cabecalho,
+        text="← Mês anterior",
+        style="Secundario.TButton",
+        command=lambda: mover_mes(-1),
+    ).pack(side="left")
+
+    # Reordena visualmente: anterior | título | próximo
+    lbl_mes.pack_forget()
+    lbl_mes.pack(side="left", fill="x", expand=True, padx=8)
+
+    ttk.Button(
+        cabecalho,
+        text="Próximo mês →",
+        style="Secundario.TButton",
+        command=lambda: mover_mes(1),
+    ).pack(side="right")
+
+    def desenhar_calendario():
+        for filho in grade.winfo_children():
+            filho.destroy()
+
+        ano = mes_atual["ano"]
+        mes = mes_atual["mes"]
+        lbl_mes.config(text=f"{MESES_PT[mes - 1]} {ano}")
+
+        for coluna, nome in enumerate(DIAS_SEMANA_PT):
+            grade.columnconfigure(coluna, weight=1, uniform="dias")
+            ttk.Label(
+                grade,
+                text=nome,
+                style="Painel.TLabel",
+                font=("Segoe UI Semibold", 9),
+                anchor="center",
+            ).grid(row=0, column=coluna, sticky="ew", padx=2, pady=(0, 4))
+
+        semanas = calendar.Calendar(firstweekday=0).monthdayscalendar(ano, mes)
+        while len(semanas) < 6:
+            semanas.append([0] * 7)
+
+        hoje = date.today()
+        for linha, semana in enumerate(semanas, start=1):
+            grade.rowconfigure(linha, weight=1)
+            for coluna, dia in enumerate(semana):
+                if dia == 0:
+                    ttk.Label(
+                        grade,
+                        text="",
+                        style="Painel.TLabel",
+                    ).grid(row=linha, column=coluna, sticky="nsew", padx=2, pady=2)
+                    continue
+
+                d = date(ano, mes, dia)
+                estilo = "Primario.TButton" if d == selecionada["data"] else "Secundario.TButton"
+                texto = str(dia)
+                if d == hoje and d != selecionada["data"]:
+                    texto = f"{dia} •"
+
+                botao = ttk.Button(
+                    grade,
+                    text=texto,
+                    style=estilo,
+                    command=lambda data=d: escolher(data),
+                    width=5,
+                )
+                botao.grid(row=linha, column=coluna, sticky="nsew", padx=2, pady=2)
+                botao.bind("<Double-1>", lambda _e, data=d: escolher(data, True))
+
+    ttk.Label(
+        rodape,
+        textvariable=texto_selecionada,
+        style="Painel.TLabel",
+    ).pack(side="left")
+
+    ttk.Button(
+        rodape,
+        text="Cancelar (Esc)",
+        style="Secundario.TButton",
+        command=cancelar,
+    ).pack(side="right")
+
+    botao_usar = ttk.Button(
+        rodape,
+        text="Usar data (Enter)",
+        style="Primario.TButton",
+        command=confirmar,
+    )
+    botao_usar.pack(side="right", padx=(0, 8))
+
+    atualizar_texto()
+    desenhar_calendario()
+
+    painel.bind("<Escape>", cancelar)
+    painel.bind("<Return>", confirmar)
+    painel.bind("<KP_Enter>", confirmar)
+    botao_usar.bind("<Escape>", cancelar)
+    botao_usar.bind("<Return>", confirmar)
+    botao_usar.bind("<KP_Enter>", confirmar)
+
+    root.update_idletasks()
+    try:
+        botao_usar.focus_force()
+    except Exception:
+        botao_usar.focus_set()
+
+    root.wait_variable(concluido)
+    resposta = None if cancelado.get() else selecionada["data"].isoformat()
+    painel.destroy()
+    return resposta
+
+
+def vincular_seletor_data(entry, variavel, titulo="Selecionar data"):
+    """
+    Transforma um Entry de data em seletor por calendário.
+    Clique ou Enter abre o calendário. O valor continua no formato YYYY-MM-DD.
+    """
+    def abrir(_evento=None):
+        try:
+            if str(entry.cget("state")) == "disabled":
+                return "break"
+        except Exception:
+            pass
+
+        atual = variavel.get().strip() if hasattr(variavel, "get") else ""
+        valor = solicitar_data(entry, titulo, valor_inicial=atual or date.today().isoformat())
+        if valor:
+            variavel.set(valor)
+        try:
+            entry.focus_set()
+        except Exception:
+            pass
+        return "break"
+
+    entry.bind("<Button-1>", abrir)
+    entry.bind("<Return>", abrir)
+    entry.bind("<KP_Enter>", abrir)
+    return entry

@@ -14,6 +14,7 @@ from relatorios.comprovante import gerar_comprovante
 from telas.helpers import (
     limpar_tree, mostrar_erro, parse_combo_id,
     confirmar_com_enter, solicitar_texto_enter,
+    solicitar_data, vincular_seletor_data,
 )
 
 
@@ -1458,14 +1459,41 @@ class TelaCaixa(ttk.Frame):
             pady=5,
         )
 
-        ttk.Entry(
-            self.entrega_frame,
-            textvariable=self.data_prevista,
-        ).grid(
+        data_box = ttk.Frame(self.entrega_frame)
+        data_box.grid(
             row=1,
             column=1,
             sticky="ew",
             pady=5,
+        )
+        data_box.columnconfigure(0, weight=1)
+
+        self.entry_data_prevista = ttk.Entry(
+            data_box,
+            textvariable=self.data_prevista,
+            state="readonly",
+        )
+        self.entry_data_prevista.grid(
+            row=0,
+            column=0,
+            sticky="ew",
+        )
+        vincular_seletor_data(
+            self.entry_data_prevista,
+            self.data_prevista,
+            "Data prevista da entrega",
+        )
+
+        self.botao_data_entrega = ttk.Button(
+            data_box,
+            text="Calendário",
+            style="Secundario.TButton",
+            command=self._selecionar_data_entrega,
+        )
+        self.botao_data_entrega.grid(
+            row=0,
+            column=1,
+            padx=(6, 0),
         )
 
         ttk.Label(
@@ -1585,6 +1613,22 @@ class TelaCaixa(ttk.Frame):
 
         return parse_combo_id(valor)
 
+    def _selecionar_data_entrega(self):
+        try:
+            if str(self.botao_data_entrega.cget("state")) == "disabled":
+                return
+        except Exception:
+            return
+
+        valor = solicitar_data(
+            self,
+            "Data prevista da entrega",
+            valor_inicial=(self.data_prevista.get().strip() or None),
+        )
+        if valor:
+            self.data_prevista.set(valor)
+            self._focar(getattr(self, "entry_data_prevista", None))
+
     def _atualizar_campos_entrega(self):
         if not hasattr(self, "entrega_frame"):
             return
@@ -1607,6 +1651,22 @@ class TelaCaixa(ttk.Frame):
                 (ttk.Entry, ttk.Combobox),
             ):
                 widget.configure(state=estado)
+
+        entry_data = getattr(self, "entry_data_prevista", None)
+        if entry_data is not None:
+            try:
+                entry_data.configure(
+                    state="readonly" if estado == "normal" else "disabled"
+                )
+            except Exception:
+                pass
+
+        botao_data = getattr(self, "botao_data_entrega", None)
+        if botao_data is not None:
+            try:
+                botao_data.configure(state=estado)
+            except Exception:
+                pass
 
         if estado == "normal":
             self._cliente_selecionado()

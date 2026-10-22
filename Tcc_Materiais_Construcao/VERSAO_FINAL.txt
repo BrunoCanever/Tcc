@@ -97,3 +97,11 @@ INSTALAÇÃO
 - Indicador visual `Consultando...` durante a consulta.
 
 - Instalador: chave da IA mostra asteriscos ao digitar/colar, sem revelar o valor real.
+
+ATUALIZAÇÃO — SELETOR DE DATAS
+- Campos de data usam calendário dentro da própria janela.
+- Atalhos: Hoje, Amanhã, +7 dias, +15 dias e +30 dias.
+- Navegação por mês e seleção visual do dia.
+- Data prevista de entrega usa o calendário.
+- Relatório de vendas por período usa calendário para início e fim.
+- Mantida a arquitetura com uma única janela Tk e sem Toplevel.

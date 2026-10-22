@@ -5,7 +5,7 @@ from funcoes.relatorio_funcoes import (
     vendas_por_periodo, produtos_mais_vendidos, estoque_atual,
     estoque_baixo, clientes_crediario_pendente, entregas_pendentes
 )
-from telas.helpers import mostrar_erro, solicitar_texto_enter
+from telas.helpers import mostrar_erro, solicitar_data
 
 
 class TelaRelatorios(ttk.Frame):
@@ -44,13 +44,29 @@ class TelaRelatorios(ttk.Frame):
     def vendas(self):
         try:
             hoje = date.today().isoformat()
-            inicio = solicitar_texto_enter(self, "Período", "Data inicial (AAAA-MM-DD):", valor_inicial=hoje)
+            inicio = solicitar_data(
+                self,
+                "Data inicial do relatório",
+                valor_inicial=hoje,
+            )
             if not inicio:
                 return
-            fim = solicitar_texto_enter(self, "Período", "Data final (AAAA-MM-DD):", valor_inicial=hoje)
+
+            fim = solicitar_data(
+                self,
+                "Data final do relatório",
+                valor_inicial=inicio,
+            )
             if not fim:
                 return
-            self.exibir("VENDAS POR PERÍODO", vendas_por_periodo(inicio, fim))
+
+            if fim < inicio:
+                inicio, fim = fim, inicio
+
+            self.exibir(
+                f"VENDAS POR PERÍODO — {inicio} até {fim}",
+                vendas_por_periodo(inicio, fim),
+            )
         except Exception as erro:
             mostrar_erro(erro)
 

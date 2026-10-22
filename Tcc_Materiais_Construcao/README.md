@@ -858,3 +858,6 @@ O Assistente IA foi alterado para não congelar a interface enquanto espera uma 
 
 Isso mantém a IA somente leitura: ela continua sem poder alterar estoque, produtos ou vendas.
 \n\n## Chave da IA com caracteres mascarados\n\nDurante `INSTALAR_TUDO.bat`, a chave da OpenAI continua protegida, mas agora o\nterminal mostra `*` para cada caractere digitado ou colado. Exemplo:\n\n```text\nOPENAI_API_KEY (sera exibida como ********): *****************************\n```\n\nA chave real não aparece na tela. No Windows Terminal, é possível colar usando\n`Ctrl + Shift + V` ou o menu do terminal. O texto colado será representado por\nasteriscos. Backspace remove um caractere e também apaga um asterisco.\n\nDepois, pressione `Enter` para confirmar.\n
+## Seletor de datas
+
+Os campos em que o usuário precisa escolher uma data usam um calendário integrado à própria janela do sistema. O seletor possui atalhos para Hoje, Amanhã, +7 dias, +15 dias e +30 dias, além da navegação entre meses. A data é salva internamente no formato `AAAA-MM-DD`.
