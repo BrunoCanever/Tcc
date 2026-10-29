@@ -19,7 +19,9 @@ if %errorlevel%==0 (
 )
 
 echo Python nao encontrado.
-echo Execute INSTALAR_TUDO.bat primeiro.
+echo.
+echo Para a primeira instalacao, abra:
+echo sistema\INSTALAR_TUDO.bat
 pause
 exit /b 1
 
@@ -28,5 +30,7 @@ exit /b 1
 if errorlevel 1 (
     echo.
     echo O sistema foi encerrado com erro.
+    echo Se for a primeira vez neste computador, execute:
+    echo sistema\INSTALAR_TUDO.bat
     pause
 )
